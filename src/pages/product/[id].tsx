@@ -1,4 +1,4 @@
-import { GetStaticProps } from "next"
+import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
 import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product"
 import { stripe } from "@/lib/stripe"
@@ -34,6 +34,15 @@ export default function Product({product}: ProductProps) {
         </ProductDetails>
         </ProductContainer>
     )
+  }
+
+  export const getStaticPaths: GetStaticPaths = async () => {
+    return {
+      paths: [
+        { params: { id: 'prod_NkHJjKq5b10J6f' } }
+      ],
+      fallback: false
+    }
   }
 
   // GetStaticProps recebe alguns generics do TS:
