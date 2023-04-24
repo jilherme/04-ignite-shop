@@ -36,6 +36,7 @@ export default function Home({products}: HomeProps) {
         <Link 
           key={id} 
           href={`/product/${id}`}
+          prefetch={false} // only prefetch when user hovers, not when in viewport
         >
         <Product
           className="keen-slider__slide">
