@@ -1,9 +1,13 @@
-import { GetStaticPaths, GetStaticProps } from "next"
-import { useRouter } from "next/router"
-import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product"
-import { stripe } from "@/lib/stripe"
-import Stripe from "stripe"
+import axios from "axios"
 import Image from "next/image"
+import { useState } from "react"
+import { useRouter } from "next/router"
+import Stripe from "stripe"
+import { GetStaticPaths, GetStaticProps } from "next"
+
+import { stripe } from "@/lib/stripe"
+
+import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product"
 
 interface ProductProps {
   product: {
@@ -12,11 +16,33 @@ interface ProductProps {
     imageUrl: string
     price: string
     description: string
+    defaultPriceId: string
   }
 }
 
 export default function Product({product}: ProductProps) {
+    const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false)
     const { isFallback } = useRouter()
+
+    async function handleBuyProduct() {
+      try {
+        setIsCreatingCheckoutSession(true)
+
+        const response = await axios.post('/api/checkout', {
+          priceId: product.defaultPriceId
+        })
+
+        const { checkoutUrl } = response.data;
+
+        window.location.href = checkoutUrl // external URL uses window.location
+      } catch (err) {
+        // conectar com uma ferramenta de obesrvabilidade (sentry/data dog)
+
+        setIsCreatingCheckoutSession(false)
+
+        alert('Erro ao processar o pagamento. Tente novamente mais tarde.')
+      }
+    }
 
     if (isFallback) {
       return <p>Carregando...</p>
@@ -34,7 +60,11 @@ export default function Product({product}: ProductProps) {
 
           <p>{product.description}</p>
 
-          <button>Comprar agora</button>
+          <button 
+          onClick={handleBuyProduct}
+          disabled={isCreatingCheckoutSession}>
+            Comprar agora
+          </button>
         </ProductDetails>
         </ProductContainer>
     )
@@ -79,7 +109,8 @@ export default function Product({product}: ProductProps) {
           name: product.name,
           imageUrl: product.images[0],
           price: formattedPrice,
-          description: product.description
+          description: product.description,
+          defaultPriceId: price.id
         }
       },
       revalidate: 60 * 60 * 1 // 1 hour
