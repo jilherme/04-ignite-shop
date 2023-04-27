@@ -1,9 +1,10 @@
 import axios from "axios"
+import Head from "next/head"
 import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/router"
-import Stripe from "stripe"
 import { GetStaticPaths, GetStaticProps } from "next"
+import Stripe from "stripe"
 
 import { stripe } from "@/lib/stripe"
 
@@ -49,7 +50,12 @@ export default function Product({product}: ProductProps) {
     }
 
     return (
-      <ProductContainer>
+    <>
+    <Head>
+      <title>{product.name} - Loja</title>
+    </Head>
+
+    <ProductContainer>
         <ImageContainer>
           <Image src={product.imageUrl} width={520} height={480} alt='' />
         </ImageContainer>
@@ -67,6 +73,7 @@ export default function Product({product}: ProductProps) {
           </button>
         </ProductDetails>
         </ProductContainer>
+    </>
     )
   }
 
