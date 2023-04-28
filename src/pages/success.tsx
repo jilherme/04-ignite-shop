@@ -1,12 +1,12 @@
-import Stripe from "stripe";
+import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
+import Stripe from "stripe";
 
 import { stripe } from "@/lib/stripe";
 
 import { ImageContainer, SuccessContainer } from "@/styles/pages/success";
-import Head from "next/head";
 
 interface SuccessProps {
   customerName: string;
@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 
   const sessionId = String(query.session_id); // to tell TS that it's a string, not an array
 
-  if (sessionId) {
+  if (!sessionId) {
     return {
       notFound: true,
     };
@@ -71,6 +71,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 
   return {
     props: {
+      customerName,
       product: {
         name: product.name,
         imageUrl: product.images[0],
