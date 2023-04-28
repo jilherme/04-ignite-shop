@@ -54,10 +54,12 @@ export default function Product({ product }: ProductProps) {
     return <p>Carregando...</p>;
   }
 
+  const title = `${product.name} - Loja`;
+
   return (
     <>
       <Head>
-        <title>{product.name} - Loja</title>
+        <title>{title}</title>
       </Head>
 
       <ProductContainer>
